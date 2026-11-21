@@ -1844,3 +1844,58 @@ textarea {
 
   .fp-flip-cue { opacity: 1; }
 }
+
+/* The fairytale exterior opens into the existing interactive room. */
+.castle-entrance, .room-arrival { position: absolute; inset: 0; }
+.castle-heading { position: absolute; top: clamp(1.5rem, 6vh, 4rem); left: clamp(1.5rem, 5vw, 5rem); pointer-events: none; transition: opacity 350ms ease; }
+.castle-heading > span { font-size: 0.75rem; letter-spacing: 0.24em; color: #e1c6ed; }
+.castle-heading h1 { margin-top: 1rem; font-family: Georgia, serif; font-weight: 400; font-size: clamp(1.8rem, 3.8vw, 4rem); line-height: 1.13; color: #fff0e7; text-shadow: 0 2px 24px #172347; }
+.castle-invitation { position: absolute; bottom: max(1.5rem, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.7rem; width: max-content; max-width: 92%; text-align: center; transition: opacity 350ms ease; }
+.castle-invitation p { color: #fff0e7; font-family: Georgia, serif; font-size: 1.2rem; text-shadow: 0 2px 10px #172347; }
+.castle-invitation button, .castle-return { cursor: pointer; color: #fff3e9; border: 1px solid #e4b8de99; border-radius: 999px; background: #48355cd9; padding: 0.85rem 1.8rem; box-shadow: 0 0 28px #f6b56e26; backdrop-filter: blur(12px); transition: background 200ms, box-shadow 200ms; }
+.castle-invitation button:hover, .castle-return:hover { background: #75507a; box-shadow: 0 0 30px #ffc88855; }
+.castle-invitation button:focus-visible, .castle-return:focus-visible { outline: 2px solid #ffe2a4; outline-offset: 5px; }
+.castle-invitation > span { color: #eee2f4; font-size: 0.875rem; text-shadow: 0 2px 10px #172347; }
+.castle-return { position: absolute; top: max(1rem, env(safe-area-inset-top)); left: 1rem; z-index: 5; font-size: 0.875rem; padding: 0.6rem 1rem; }
+.castle-transition { position: absolute; inset: 0; pointer-events: none; background: #fff0dc; opacity: 0; }
+.is-entering .castle-heading, .is-entering .castle-invitation { opacity: 0; pointer-events: none; }
+.is-entering .castle-transition { animation: castle-crossing 2.6s ease-in forwards; }
+.room-loading-veil { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; background: #fff0dc; color: #684c77; opacity: 1; transition: opacity 650ms ease-out, visibility 0s 650ms; }
+.room-loading-veil.is-ready { opacity: 0; visibility: hidden; pointer-events: none; }
+@keyframes castle-crossing { 0%, 65% { opacity: 0; } 100% { opacity: 1; } }
+
+@media (max-width: 640px) { .castle-heading { top: 1.5rem; left: 0; width: 100%; text-align: center; } .castle-heading h1 { font-size: 1.65rem; margin-top: 0.5rem; } .castle-heading h1 br { display: none; } .castle-heading > span { font-size: 0.65rem; } .castle-invitation p { font-size: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .room-arrival, .is-entering .castle-transition { animation: none; } .castle-heading, .castle-invitation { transition: none; } }
+
+@media (prefers-reduced-motion: reduce) { .room-loading-veil { transition: none; } }
+
+.guest-hall { position: absolute; inset: 0; background: #172347; }
+.hall-heading { position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); text-align: center; width: max-content; max-width: 90%; pointer-events: none; color: #fff0e7; text-shadow: 0 2px 12px #172347; }
+.hall-heading span { font-size: 0.75rem; letter-spacing: 0.24em; }
+.hall-heading h1 { font: 400 clamp(2rem, 4vw, 3.5rem)/1.2 Georgia, serif; margin: 0.4rem 0; }
+.hall-heading p { font-size: 1rem; }
+.hall-choices { position: absolute; bottom: max(2rem, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); display: flex; gap: 1.5rem; width: max-content; max-width: 94%; }
+.hall-choices button { border: 1px solid #e4b8de99; border-radius: 999px; background: #48355cd9; color: #fff3e9; padding: 0.9rem 1.5rem; font-size: 1rem; cursor: pointer; box-shadow: 0 8px 30px #17234755; }
+.hall-choices button:disabled { background: #625f80e8; color: #e1d5ed; border-color: #a598b5; cursor: default; }
+.hall-choices button:enabled:hover { background: #75507a; }
+.hall-choices button:focus-visible { outline: 3px solid #ffe2a4; outline-offset: 4px; }
+.hall-crossing { position: absolute; inset: 0; background: #fff0dc; opacity: 0; pointer-events: none; }
+.hall-entering .hall-crossing { animation: hall-crossing ease-in forwards; }
+@keyframes hall-crossing { 0%, 82% { opacity: 0; } 100% { opacity: 1; } }
+.hall-entering .hall-heading, .hall-entering .hall-choices { opacity: 0; pointer-events: none; }
+@media (max-width: 640px) { .hall-heading { top: 5rem; } .hall-heading p { font-size: 0.875rem; } .hall-choices { gap: 0.6rem; } .hall-choices button { padding: 0.8rem 0.9rem; font-size: 0.875rem; } }
+@media (prefers-reduced-motion: reduce) { .hall-entering .hall-crossing { animation: none; opacity: 1; } }
+
+.library-room { position: absolute; inset: 0; background: #101426; }
+.library-heading { position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); width: max-content; max-width: 90%; text-align: center; color: #ffedcc; pointer-events: none; text-shadow: 0 2px 18px #101426; }
+.library-heading span { font-size: 0.75rem; letter-spacing: 0.2em; }
+.library-heading h1 { font: 400 clamp(1.8rem, 3.5vw, 3rem)/1.2 Georgia, serif; margin-top: 0.5rem; }
+.library-hint { position: absolute; bottom: max(1.5rem, env(safe-area-inset-bottom)); width: 100%; text-align: center; color: #ffe5bb; font-family: Georgia, serif; font-size: 1.1rem; text-shadow: 0 2px 12px #101426; pointer-events: none; padding: 0 1rem; }
+.library-hint span { display: block; margin-top: 0.5rem; font-family: 'Space Grotesk', sans-serif; font-size: 0.875rem; color: #d0bfdc; }
+@media (max-width: 640px) { .library-heading { top: 5rem; } .library-heading span { font-size: 0.65rem; } .library-heading h1 { font-size: 1.8rem; } }
+
+.library-door-label { display: block; white-space: nowrap; border: 1px solid #d4ab6380; border-radius: 999px; padding: 0.5rem 0.85rem; background: #302337e8; color: #ffe5bb; font-size: 0.875rem; }
+
+.hall-heading .hall-view-hint { margin-top: 0.5rem; font-size: 0.875rem; color: #eee2f4; }
+
+.hall-door-label { display: block; white-space: nowrap; padding: 0.5rem 0.85rem; border: 1px solid #edc27999; border-radius: 999px; background: #48355ce8; color: #fff3e9; font-size: 0.875rem; }

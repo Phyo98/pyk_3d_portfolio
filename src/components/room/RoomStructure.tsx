@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import galaxyImg from '../../assets/ceiling/galaxy.webp';
 import Flooring from './Flooring';
 
-/* the galaxy picture is cropped to the ceiling's 14 × 12 proportions */
+/* the galaxy picture is cropped to the ceiling's 14 × 18 proportions */
 function GalaxyCeiling() {
   const galaxy = useTexture(galaxyImg);
   useEffect(() => {
@@ -13,8 +13,8 @@ function GalaxyCeiling() {
     galaxy.needsUpdate = true;
   }, [galaxy]);
   return (
-    <mesh position={[0, 8, 0]} rotation={[Math.PI / 2, 0, 0]}>
-      <planeGeometry args={[14, 12]} />
+    <mesh position={[0, 8, 3]} rotation={[Math.PI / 2, 0, 0]}>
+      <planeGeometry args={[14, 18]} />
       {/* unlit so the stars read at night; dimmed a touch so the bright core glows rather than blows out */}
       <meshBasicMaterial map={galaxy} color="#c4bcd4" />
     </mesh>
@@ -33,15 +33,21 @@ export default function RoomStructure() {
         <meshStandardMaterial color={WALL} roughness={0.92} metalness={0.06} />
       </mesh>
 
+      {/* Front wall closes the room for a full 360-degree interior view. */}
+      <mesh position={[0, 4, 12]} rotation={[0, Math.PI, 0]} receiveShadow>
+        <planeGeometry args={[14, 8]} />
+        <meshStandardMaterial color={WALL2} roughness={0.92} metalness={0.06} />
+      </mesh>
+
       {/* ── Left wall ── */}
-      <mesh position={[-7, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[12, 8]} />
+      <mesh position={[-7, 4, 3]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[18, 8]} />
         <meshStandardMaterial color={WALL2} roughness={0.92} metalness={0.06} />
       </mesh>
 
       {/* ── Right wall ── */}
-      <mesh position={[7, 4, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[12, 8]} />
+      <mesh position={[7, 4, 3]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[18, 8]} />
         <meshStandardMaterial color={WALL2} roughness={0.92} metalness={0.06} />
       </mesh>
 
@@ -60,19 +66,19 @@ export default function RoomStructure() {
       </mesh>
 
       {/* ── LED strip — left ceiling edge ── */}
-      <mesh position={[-6.92, 7.88, 0]}>
-        <boxGeometry args={[0.07, 0.07, 12]} />
+      <mesh position={[-6.92, 7.88, 3]}>
+        <boxGeometry args={[0.07, 0.07, 18]} />
         <meshStandardMaterial color="#7b00ff" emissive="#7b00ff" emissiveIntensity={4} />
       </mesh>
 
       {/* ── LED strip — right ceiling edge ── */}
-      <mesh position={[6.92, 7.88, 0]}>
-        <boxGeometry args={[0.07, 0.07, 12]} />
+      <mesh position={[6.92, 7.88, 3]}>
+        <boxGeometry args={[0.07, 0.07, 18]} />
         <meshStandardMaterial color="#7b00ff" emissive="#7b00ff" emissiveIntensity={4} />
       </mesh>
 
       {/* ── LED strip — front ceiling edge ── */}
-      <mesh position={[0, 7.88, 5.92]}>
+      <mesh position={[0, 7.88, 11.92]}>
         <boxGeometry args={[14, 0.07, 0.07]} />
         <meshStandardMaterial color="#7b00ff" emissive="#7b00ff" emissiveIntensity={4} />
       </mesh>

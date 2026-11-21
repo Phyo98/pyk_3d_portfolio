@@ -7,7 +7,8 @@ import { PUFFS, RUG_CENTER, RUG_SCALE, RUG_THICK } from './rug';
    edge and an embroidered moon and stars. */
 
 const ROOM_W = 14;
-const ROOM_D = 12;
+const ROOM_D = 18;
+const ROOM_CENTER_Z = 3;
 
 /* ── herringbone floor texture ──────────────────────────────────────────────
    Planks W × L (L = 4W) in a 90° herringbone, drawn rotated 45° so they run
@@ -116,7 +117,7 @@ function herringboneTextures() {
 function Floor() {
   const { map, bumpMap } = useMemo(herringboneTextures, []);
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+    <mesh position={[0, 0, ROOM_CENTER_Z]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
       <planeGeometry args={[ROOM_W, ROOM_D]} />
       {/* darker than the reference so the room keeps its night mood */}
       <meshStandardMaterial map={map} bumpMap={bumpMap} bumpScale={0.6} color="#8a7c9e" roughness={0.5} metalness={0.05} />
@@ -159,7 +160,7 @@ function Baseboards() {
   return (
     <>
       {walls.map(({ pos, len, rotY }, i) => (
-        <group key={i} position={[pos[0], 0, pos[1]]} rotation={[0, rotY, 0]}>
+        <group key={i} position={[pos[0], 0, pos[1] + ROOM_CENTER_Z]} rotation={[0, rotY, 0]}>
           <mesh material={board} position={[0, BASE_H / 2, 0]} receiveShadow>
             <boxGeometry args={[len, BASE_H, BASE_T]} />
           </mesh>

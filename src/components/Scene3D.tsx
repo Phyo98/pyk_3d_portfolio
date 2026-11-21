@@ -1,6 +1,6 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
-import { Suspense } from 'react';
+import { Suspense, useRef } from 'react';
 import * as THREE from 'three';
 import type { SectionId } from '../App';
 import BedSetup from './room/BedSetup';
@@ -13,6 +13,7 @@ import RoamingPet from './room/RoamingPet';
 import { PETS } from './room/pets';
 import RoomLabels from './room/RoomLabels';
 import RoomLighting from './room/RoomLighting';
+import RoomExitDoor from './room/RoomExitDoor';
 import RoomStructure from './room/RoomStructure';
 import SakuraTree from './room/SakuraTree';
 import WallPosters from './room/WallPosters';
@@ -24,12 +25,24 @@ const isCompact =
   window.matchMedia('(max-width: 820px), (pointer: coarse)').matches;
 
 type Props = {
+  onBack: () => void;
+  onReady: () => void;
   activeSection: SectionId | null;
   onSelectSection: (id: SectionId) => void;
 };
 
-export default function Scene3D({ activeSection, onSelectSection: select }: Props) {
-  /* a pan gesture that ends on an object is not a tap on it */
+// Wait until the complete Suspense tree has committed and a frame has rendered.
+function RoomReady({ onReady }: { onReady: () => void }) {
+  const frames = useRef(0);
+  useFrame(() => {
+    frames.current += 1;
+    if (frames.current === 2) onReady();
+  });
+  return null;
+}
+
+export default function Scene3D({ activeSection, onSelectSection: select, onReady, onBack }: Props) {
+  /* an orbit gesture that ends on an object is not a tap on it */
   const onSelectSection = (id: SectionId) => {
     if (recentlyDragged()) return;
     select(id);
@@ -39,7 +52,7 @@ export default function Scene3D({ activeSection, onSelectSection: select }: Prop
     <Canvas
       style={{ position: 'absolute', inset: 0, touchAction: 'none' }}
       dpr={isCompact ? [1, 1.5] : [1, 2]}
-      camera={{ position: [0, 4, 9], fov: 52, near: 0.1, far: 100 }}
+      camera={{ position: [0, 3.2, 9], fov: 70, near: 0.1, far: 100 }}
       gl={{
         antialias: true,
         toneMapping: THREE.ACESFilmicToneMapping,
@@ -49,11 +62,11 @@ export default function Scene3D({ activeSection, onSelectSection: select }: Prop
       }}
       shadows={!isCompact}
     >
+      <Suspense fallback={null}>
       <CameraController activeSection={activeSection} />
       <RoomLighting />
       <RoomStructure />
-      {/* DeskSetup loads the portrait texture, so it suspends until it is ready */}
-      <Suspense fallback={null}>
+      <RoomExitDoor onBack={onBack} enabled={!activeSection} />
         <group position={[1.2, 0, 0]}>
           <DeskSetup
             onSelectAbout={() => onSelectSection('about')}
@@ -62,16 +75,12 @@ export default function Scene3D({ activeSection, onSelectSection: select }: Prop
             isSkillsActive={activeSection === 'skills'}
           />
         </group>
-      </Suspense>
-      {/* the posters load their artwork as textures */}
-      <Suspense fallback={null}>
         <group position={[1.2, 0, 0]}>
           <WallPosters
             onSelect={() => onSelectSection('projects')}
             isActive={activeSection === 'projects'}
           />
         </group>
-      </Suspense>
       <SakuraTree
         onSelect={() => onSelectSection('contact')}
         isActive={activeSection === 'contact'}
@@ -80,12 +89,9 @@ export default function Scene3D({ activeSection, onSelectSection: select }: Prop
         onSelect={() => onSelectSection('skills')}
         isActive={activeSection === 'skills'}
       />
-      {/* each pet loads its drawings as textures, so it suspends until they are ready */}
       {PETS.map((pet) => (
-        <Suspense key={pet.id} fallback={null}>
-          <RoamingPet {...pet} />
-        </Suspense>
-      ))}
+        <RoamingPet key={pet.id} {...pet} />
+        ))}
       <BedSetup />
       <NeonSigns />
       <RoomLabels />
@@ -98,6 +104,8 @@ export default function Scene3D({ activeSection, onSelectSection: select }: Prop
           mipmapBlur
         />
       </EffectComposer>
+      <RoomReady onReady={onReady} />
+      </Suspense>
     </Canvas>
   );
 }
