@@ -1,5 +1,5 @@
 import { useAnimationFrame, useReducedMotion } from 'framer-motion';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { rings } from '../../data/skills';
 import type { Ring, Skill } from '../../data/skills';
 
@@ -22,6 +22,17 @@ export default function SkillOrbit({ focus, activeName, onPick }: Props) {
   const angles      = useRef<Record<string, number>>({});
   const paused      = useRef(false);
   const reduced     = useReducedMotion();
+  const resumeTimer = useRef<number>();
+
+  /* touch has no hover, so a tap holds the orbit still for a few seconds */
+  const holdForTouch = (e: React.PointerEvent) => {
+    if (e.pointerType === 'mouse') return;
+    paused.current = true;
+    window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => { paused.current = false; }, 4000);
+  };
+
+  useEffect(() => () => window.clearTimeout(resumeTimer.current), []);
 
   /* node positions are fixed on their ring; the ring is what rotates */
   const nodes = useMemo<Node[]>(
@@ -62,6 +73,7 @@ export default function SkillOrbit({ focus, activeName, onPick }: Props) {
       aria-label="Interactive skill orbit"
       onMouseEnter={() => { paused.current = true; }}
       onMouseLeave={() => { paused.current = false; }}
+      onPointerDown={holdForTouch}
     >
       {/* orbit paths */}
       {rings.map((ring) => (

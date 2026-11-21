@@ -13,6 +13,9 @@ function App() {
         activeSection={activeSection}
         onSelectSection={setActiveSection}
       />
+      {!activeSection && (
+        <p className="room-touch-hint">Tap an object to explore · drag to look around · pinch to zoom</p>
+      )}
       {activeSection && (
         <ContentPanel section={activeSection} onClose={() => setActiveSection(null)} />
       )}

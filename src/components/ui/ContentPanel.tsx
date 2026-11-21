@@ -293,7 +293,7 @@ function SkillsPage() {
         </motion.h1>
         <motion.p className="fp-para" variants={item}>
           Three orbits around one core: backend closest in, frontend around it, creative work on
-          the outside. Hover any node to inspect it — the orbits hold still while you read.
+          the outside. Hover or tap any node to inspect it — the orbits hold still while you read.
         </motion.p>
       </div>
 
