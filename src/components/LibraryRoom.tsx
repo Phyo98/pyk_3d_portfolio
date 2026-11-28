@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Html, OrbitControls, RoundedBox, Sparkles, useCursor } from '@react-three/drei';
+import { OrbitControls, RoundedBox, Sparkles } from '@react-three/drei';
+import CastleRoomDoor from './CastleRoomDoor';
 import * as THREE from 'three';
 
 type Vec3 = [number, number, number];
@@ -106,8 +107,6 @@ function Chandelier() {
 }
 
 function LibraryWorld({ onReady, reduced, onBack }: { onReady: () => void; reduced: boolean; onBack: () => void }) {
-  const [doorHovered, setDoorHovered] = useState(false);
-  useCursor(doorHovered);
   const frames = useRef(0);
   useFrame(() => { if (++frames.current === 2) onReady(); });
   return <>
@@ -141,28 +140,11 @@ function LibraryWorld({ onReady, reduced, onBack }: { onReady: () => void; reduc
     <Box at={[-1.6, 6.25, -6.4]} size={[10.8, 0.09, 0.09]} color="#d4ab63" />
     {Array.from({ length: 25 }, (_, i) => <Box key={i} at={[-6.9 + i * 0.43, 5.75, -6.4]} size={[0.035, 1, 0.035]} color="#d4ab63" />)}
     {[-5.4, -3.5, -1.6, 0.3, 2.2, 4.1, 6].map(x => <group key={x} position={[x, 5.3, -8.02]} scale={[1, 0.43, 1]}><Shelf at={[0, 0, 0]} /></group>)}
-    <group
-      position={[0, 0.1, 8.28]}
-      rotation={[0, Math.PI, 0]}
-      onPointerOver={event => { event.stopPropagation(); setDoorHovered(true); }}
-      onPointerOut={() => setDoorHovered(false)}
-      onClick={event => {
-        event.stopPropagation();
-        // An orbit drag ending over the door must not trigger navigation.
-        if (event.delta <= 6) onBack();
-      }}
-    >
-      <mesh position={[0, 1.7, 0]}>
-        <boxGeometry args={[2, 3.4, 0.16]} />
-        <meshStandardMaterial color="#9a6b45" emissive="#ffbd66" emissiveIntensity={doorHovered ? 0.35 : 0} roughness={0.75} />
-      </mesh>
-      <Html position={[0, 3.95, 0.2]} center occlude style={{ pointerEvents: 'none' }}>
-        <span className="library-door-label">Guest hall · Click to return</span>
-      </Html>
-      {[-1.07, 1.07].map(x => <Box key={x} at={[x, 1.8, 0.1]} size={[0.13, 3.6, 0.2]} color="#bfa077" />)}
-      <Box at={[0, 3.55, 0.1]} size={[2.25, 0.15, 0.2]} color="#bfa077" />
-      <mesh position={[0.65, 1.6, 0.16]}><sphereGeometry args={[0.08, 12, 12]} /><meshStandardMaterial color="#e1bd76" /></mesh>
-    </group>
+    <CastleRoomDoor
+      x={0} at={[0, 0.1, 8.28]} rotation={Math.PI}
+      active entering={false} onEnter={onBack}
+      label="Guest hall · Click to return"
+    />
     <ReadingTable at={[-3.6, 0, 0.4]} />
     <ReadingTable at={[3.8, 0, 2.8]} />
     <Chandelier />

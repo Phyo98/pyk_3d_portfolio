@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Sparkles, Stars } from '@react-three/drei';
+import GrandCastleDoor from './GrandCastleDoor';
 import * as THREE from 'three';
 
 function arch(width: number, height: number) {
@@ -13,7 +14,6 @@ function arch(width: number, height: number) {
   return s;
 }
 const windowShape = arch(0.42, 1);
-const doorShape = arch(1.5, 2.4);
 
 function Window({ y, z }: { y: number; z: number }) {
   return <group position={[0, y, z]}>
@@ -61,8 +61,6 @@ function Tower({ x, z, height, radius, reduced }: { x: number; z: number; height
 }
 
 function World({ entering, reduced, onEnter, onInside }: { entering: boolean; reduced: boolean; onEnter: () => void; onInside: () => void }) {
-  const leftDoor = useRef<THREE.Group>(null);
-  const rightDoor = useRef<THREE.Group>(null);
   const time = useRef(0);
   const finished = useRef(false);
   const start = useRef(new THREE.Vector3());
@@ -87,8 +85,6 @@ function World({ entering, reduced, onEnter, onInside }: { entering: boolean; re
         look.current.set(0, THREE.MathUtils.lerp(4.7, 1.8, ease), 0);
         camera.lookAt(look.current);
       }
-      if (leftDoor.current) leftDoor.current.rotation.y = -Math.min(p * 2, 1) * 1.35;
-      if (rightDoor.current) rightDoor.current.rotation.y = Math.min(p * 2, 1) * 1.35;
       if (p === 1 && !finished.current) { finished.current = true; onInside(); }
     }
     if (!reduced) waterMaterial.current && (waterMaterial.current.opacity = 0.79 + Math.sin(clock.elapsedTime) * 0.04);
@@ -122,16 +118,8 @@ function World({ entering, reduced, onEnter, onInside }: { entering: boolean; re
       <Tower x={-2} z={1} height={3.2} radius={0.62} reduced={reduced} />
       <Tower x={1.95} z={1.1} height={2.8} radius={0.65} reduced={reduced} />
       <Tower x={0} z={0.65} height={3.8} radius={1.05} reduced={reduced} />
-      <group position={[0, 0.55, 1.72]}>
-        <mesh position={[0, -0.08, -0.04]} scale={[1.2, 1.12, 1]}><shapeGeometry args={[doorShape]} /><meshStandardMaterial color="#dfb9d5" /></mesh>
-        <mesh><shapeGeometry args={[doorShape]} /><meshBasicMaterial color="#ffe5b1" /></mesh>
-        {[-1, 1].map(side => <group key={side} ref={side === -1 ? leftDoor : rightDoor} position={[side * 0.75, 0, 0.03]}>
-          <mesh position={[-side * 0.375, 0.91, 0]}><boxGeometry args={[0.74, 1.82, 0.09]} /><meshStandardMaterial color="#cc8a58" emissive="#d17a38" emissiveIntensity={hovered ? 0.6 : 0.2} /></mesh>
-          {[0.16, 0.38, 0.6].map(x => <mesh key={x} position={[-side * x, 0.9, 0.06]}><boxGeometry args={[0.025, 1.7, 0.02]} /><meshStandardMaterial color="#edb676" /></mesh>)}
-          <mesh position={[-side * 0.62, 0.9, 0.11]}><sphereGeometry args={[0.06, 10, 10]} /><meshStandardMaterial color="#735039" metalness={0.7} roughness={0.2} /></mesh>
-        </group>)}
-        <pointLight position={[0, 1, 0.8]} color="#ffb968" intensity={9} distance={5} />
-      </group>
+      <GrandCastleDoor position={[0, 0.55, 1.72]} rotation={0} scale={0.36} active={!entering} opening={entering} reduced={reduced} onExit={onEnter} />
+      <pointLight position={[0, 1.55, 2.52]} color="#ffb968" intensity={9} distance={5} />
     </group>
     {Array.from({ length: 14 }, (_, i) => <group key={i} position={[0, 0.48 - i * 0.055, 2 + i * 0.34]}>
       <mesh><boxGeometry args={[1.9, 0.16, 0.36]} /><meshStandardMaterial color={i % 2 ? '#b2a1bc' : '#a598b5'} /></mesh>

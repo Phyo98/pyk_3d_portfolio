@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import SecretGarden from './components/SecretGarden';
 import LibraryRoom from './components/LibraryRoom';
 import GuestHall from './components/GuestHall';
 import CastleEntrance from './components/CastleEntrance';
@@ -9,7 +10,7 @@ export type SectionId = 'about' | 'skills' | 'projects' | 'contact';
 
 function App() {
   const [roomReady, setRoomReady] = useState(false);
-  const [location, setLocation] = useState<'castle' | 'hall' | 'room' | 'library'>('castle');
+  const [location, setLocation] = useState<'castle' | 'hall' | 'room' | 'library' | 'garden'>('castle');
   const inside = location === 'room';
   const [activeSection, setActiveSection] = useState<SectionId | null>(null);
 
@@ -18,8 +19,10 @@ function App() {
       {location === 'castle' && <CastleEntrance onInside={() => setLocation('hall')} />}
       {location === 'hall' && <GuestHall onInside={(destination) => { setRoomReady(false); setLocation(destination); }} onBack={() => setLocation('castle')} />}
       {location === 'library' && <LibraryRoom onBack={() => setLocation('hall')} />}
+      {location === 'garden' && <SecretGarden onBack={() => { setRoomReady(false); setLocation('room'); }} />}
       {inside && <div className="room-arrival">
       <Scene3D
+        onGarden={() => { setActiveSection(null); setLocation('garden'); }}
         onBack={() => { setActiveSection(null); setRoomReady(false); setLocation('hall'); }}
         onReady={() => setRoomReady(true)}
         activeSection={activeSection}

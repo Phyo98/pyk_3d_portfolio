@@ -1899,3 +1899,16 @@ textarea {
 .hall-heading .hall-view-hint { margin-top: 0.5rem; font-size: 0.875rem; color: #eee2f4; }
 
 .hall-door-label { display: block; white-space: nowrap; padding: 0.5rem 0.85rem; border: 1px solid #edc27999; border-radius: 999px; background: #48355ce8; color: #fff3e9; font-size: 0.875rem; }
+
+.secret-garden { position: absolute; inset: 0; background: #8578bf; }
+.secret-garden-label, .garden-controls button { border: 1px solid #eacb9a; border-radius: 999px; padding: 0.65rem 1.1rem; background: #59416ee8; color: #fff0d8; cursor: pointer; white-space: nowrap; font-size: 0.875rem; }
+.secret-garden-label:hover, .garden-controls button:hover { background: #795593; }
+.secret-garden-label:focus-visible, .garden-controls button:focus-visible { outline: 3px solid #ffe8b6; outline-offset: 4px; }
+.garden-heading { position: absolute; top: 2rem; left: 50%; transform: translateX(-50%); width: max-content; max-width: 90%; text-align: center; pointer-events: none; color: #fff2de; text-shadow: 0 2px 18px #614c85; }
+.garden-heading span { font-size: 0.75rem; letter-spacing: 0.22em; }
+.garden-heading h1 { font: 400 clamp(1.8rem, 3.5vw, 3.2rem)/1.2 Georgia, serif; margin: 0.6rem 0; }
+.garden-heading p { font-size: 1rem; }
+.garden-controls { position: absolute; bottom: max(1.5rem, env(safe-area-inset-bottom)); width: 100%; text-align: center; pointer-events: none; }
+.garden-controls button { pointer-events: auto; font-size: 1rem; }
+.garden-controls p { margin-top: 0.65rem; color: #fff1e7; text-shadow: 0 2px 12px #584271; font-size: 0.875rem; }
+@media (max-width: 640px) { .garden-heading { top: 5rem; } .garden-heading h1 { font-size: 1.8rem; } .garden-heading span { font-size: 0.65rem; } }

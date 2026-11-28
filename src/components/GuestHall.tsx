@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Html, OrbitControls, Sparkles } from '@react-three/drei';
+import { OrbitControls, Sparkles } from '@react-three/drei';
+import GrandCastleDoor from './GrandCastleDoor';
+import CastleRoomDoor from './CastleRoomDoor';
 import * as THREE from 'three';
 
 type Destination = 'room' | 'library';
@@ -18,7 +20,6 @@ function arch(width: number, height: number) {
   shape.closePath();
   return shape;
 }
-const doorway = arch(1.65, 3.4);
 const windowShape = arch(2.6, 5.3);
 
 function Column({ x, z }: { x: number; z: number }) {
@@ -56,72 +57,6 @@ function Staircase({ side }: { side: number }) {
   </group>;
 }
 
-function Door({ x, active, entering, onEnter, at, rotation = 0, label }: {
-  x: number; active: boolean; entering: boolean; onEnter: () => void;
-  at?: Vec3; rotation?: number; label?: string;
-}) {
-  const hinge = useRef<THREE.Group>(null);
-  const [hover, setHover] = useState(false);
-  useEffect(() => {
-    if (hover && active) document.body.style.cursor = 'pointer';
-    return () => { document.body.style.cursor = ''; };
-  }, [hover, active]);
-  useFrame((_, dt) => {
-    if (hinge.current) hinge.current.rotation.y = THREE.MathUtils.damp(hinge.current.rotation.y, entering && active ? -1.5 : 0, 3, dt);
-  });
-  return <group position={at ?? [x, 2.6, -4.22]} rotation={[0, rotation, 0]} onClick={e => { e.stopPropagation(); if (active && e.delta <= 6) onEnter(); }} onPointerOver={e => { e.stopPropagation(); setHover(true); }} onPointerOut={() => setHover(false)}>
-    {label && <Html position={[0, 4.1, 0.2]} center occlude style={{ pointerEvents: 'none' }}><span className="hall-door-label">{label}</span></Html>}
-    <mesh scale={[1.15, 1.06, 1]} position={[0, -0.02, -0.04]}><shapeGeometry args={[doorway]} /><meshStandardMaterial color={TRIM} /></mesh>
-    <mesh><shapeGeometry args={[doorway]} /><meshBasicMaterial color={active ? '#ffe5b1' : '#625f80'} /></mesh>
-    <group ref={hinge} position={[-0.825, 0, 0.04]}>
-      <mesh position={[0.825, 0, 0]}><shapeGeometry args={[doorway]} /><meshStandardMaterial color={active ? '#cc8a58' : '#a598b5'} side={THREE.DoubleSide} emissive="#d17a38" emissiveIntensity={active && hover ? 0.25 : 0} /></mesh>
-      {[0.65, 1.65, 2.5].map(y => <group key={y}>
-        <Block at={[0.825, y, 0.03]} size={[1.25, 0.035, 0.04]} color={TRIM} />
-      </group>)}
-      {[0.22, 1.43].map(x => <Block key={x} at={[x, 1.45, 0.03]} size={[0.035, 2.1, 0.04]} color={TRIM} />)}
-      <mesh position={[1.4, 1.35, 0.12]}><sphereGeometry args={[0.075, 16, 16]} /><meshStandardMaterial color={TRIM} metalness={0.7} roughness={0.2} /></mesh>
-    </group>
-    <mesh position={[0, 3.75, 0]}><octahedronGeometry args={[0.16]} /><meshStandardMaterial color={TRIM} /></mesh>
-  </group>;
-}
-
-const grandDoorFrame = arch(4.6, 6.75);
-const grandDoorLeaf = new THREE.Shape();
-grandDoorLeaf.moveTo(0, 0);
-grandDoorLeaf.lineTo(1.95, 0);
-grandDoorLeaf.lineTo(1.95, 4.45);
-grandDoorLeaf.absarc(0, 4.45, 1.95, 0, Math.PI / 2, false);
-grandDoorLeaf.closePath();
-
-function GrandCastleDoor({ active, onExit }: { active: boolean; onExit: () => void }) {
-  const [hover, setHover] = useState(false);
-  useEffect(() => {
-    if (hover && active) document.body.style.cursor = 'pointer';
-    return () => { document.body.style.cursor = ''; };
-  }, [hover, active]);
-  return <group position={[0, 0.1, 9.45]} rotation={[0, Math.PI, 0]}
-    onPointerOver={event => { event.stopPropagation(); setHover(true); }}
-    onPointerOut={() => setHover(false)}
-    onClick={event => { event.stopPropagation(); if (active && event.delta <= 6) onExit(); }}>
-    <mesh position={[0, 0, -0.04]}><shapeGeometry args={[grandDoorFrame]} /><meshStandardMaterial color="#d4b9ec" /></mesh>
-    {[-1, 1].map(side => <group key={side}>
-      <mesh scale={[side, 1, 1]}><shapeGeometry args={[grandDoorLeaf]} /><meshStandardMaterial color="#a9653e" side={THREE.DoubleSide} emissive="#ffb968" emissiveIntensity={hover && active ? 0.3 : 0.06} /></mesh>
-      {[1.05, 2.85, 4.25].map((y, i) => <group key={y} position={[side * 0.98, y, 0.04]}>
-        <Block at={[0, 0, 0]} size={[1.48, i === 2 ? 0.65 : 1.4, 0.05]} color={TRIM} />
-        <Block at={[0, 0, 0.04]} size={[1.34, i === 2 ? 0.51 : 1.26, 0.05]} color="#7839a6" />
-        <mesh position={[0, 0, 0.09]} scale={[0.15, 0.25, 0.06]}><octahedronGeometry args={[1]} /><meshStandardMaterial color={TRIM} metalness={0.5} roughness={0.3} /></mesh>
-      </group>)}
-      <mesh position={[side * 0.22, 2.25, 0.18]}><torusGeometry args={[0.13, 0.035, 8, 20]} /><meshStandardMaterial color={TRIM} metalness={0.7} roughness={0.25} /></mesh>
-      <mesh position={[side * 2.12, 2.22, 0.13]}><cylinderGeometry args={[0.12, 0.16, 4.45, 16]} /><meshStandardMaterial color={TRIM} /></mesh>
-      {[0.15, 4.4].map(y => <Block key={y} at={[side * 2.12, y, 0.13]} size={[0.34, 0.24, 0.35]} color="#edc279" />)}
-    </group>)}
-    <Block at={[0, 2.22, 0.08]} size={[0.055, 4.45, 0.07]} color={TRIM} />
-    <mesh position={[0, 4.45, 0.13]}><torusGeometry args={[2.12, 0.12, 10, 48, Math.PI]} /><meshStandardMaterial color={TRIM} metalness={0.4} roughness={0.3} /></mesh>
-    <mesh position={[0, 5.6, 0.12]} scale={[0.3, 0.4, 0.1]}><octahedronGeometry args={[1]} /><meshStandardMaterial color="#edc279" /></mesh>
-    <Block at={[0, 0.03, 0.25]} size={[4.6, 0.1, 0.75]} color="#d4b9ec" />
-    <Html position={[0, 3.85, 0.3]} center occlude style={{ pointerEvents: 'none' }}><span className="hall-door-label">Castle exterior · Click to exit</span></Html>
-  </group>;
-}
 
 function HallWorld({ destination, reduced, onEnter, onInside, onReady, onBack }: { destination: Destination | null; reduced: boolean; onEnter: (destination: Destination) => void; onInside: () => void; onReady: () => void; onBack: () => void }) {
   const entering = destination !== null;
@@ -192,7 +127,7 @@ function HallWorld({ destination, reduced, onEnter, onInside, onReady, onBack }:
     <Block at={[0, -0.16, 0]} size={[15, 0.3, 22]} color="#6b698b" />
     {/* Close and furnish the rear wall so every viewing direction is an interior. */}
     <Block at={[0, 3.6, 9.8]} size={[15, 7.2, 0.3]} color="#b49bd9" />
-    <GrandCastleDoor active={!entering} onExit={onBack} />
+    <GrandCastleDoor active={!entering} onExit={onBack} label="Castle exterior · Click to exit" />
     {[0.25, 6.6, 6.9].map(y => <Block key={y} at={[0, y, 9.6]} size={[15, 0.08, 0.1]} color={TRIM} />)}
     {[-1, 1].map(side => <Column key={side} x={side * 6.8} z={8.8} />)}
     <Chandelier at={[0, 5.5, 8]} />
@@ -216,8 +151,8 @@ function HallWorld({ destination, reduced, onEnter, onInside, onReady, onBack }:
     {[-1.28, 1.28].map(x => <Block key={x} at={[x, 0.035, 1.4]} size={[0.045, 0.015, 11]} color={TRIM} />)}
     {Array.from({ length: 9 }, (_, i) => <Block key={i} at={[0, 0.005, -4 + i * 1.4]} size={[14.8, 0.01, 0.025]} color="#b2a1bc" />)}
     {[-5, -2.5, 2.5, 5].map(x => <Block key={x} at={[x, 0.005, 1]} size={[0.025, 0.01, 18]} color="#b2a1bc" />)}
-    <Door x={-5.35} active entering={destination === 'room'} onEnter={() => onEnter('room')} />
-    <Door x={5.35} active entering={destination === 'library'} onEnter={() => onEnter('library')} />
+    <CastleRoomDoor reduced={reduced} x={-5.35} active entering={destination === 'room'} onEnter={() => onEnter('room')} />
+    <CastleRoomDoor reduced={reduced} x={5.35} active entering={destination === 'library'} onEnter={() => onEnter('library')} />
     <Chandelier at={[0, 5.5, 4]} />
   </>;
 }

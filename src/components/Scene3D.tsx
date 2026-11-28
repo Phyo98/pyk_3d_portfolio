@@ -13,6 +13,7 @@ import RoamingPet from './room/RoamingPet';
 import { PETS } from './room/pets';
 import RoomLabels from './room/RoomLabels';
 import RoomLighting from './room/RoomLighting';
+import SecretGardenDoor from './room/SecretGardenDoor';
 import RoomExitDoor from './room/RoomExitDoor';
 import RoomStructure from './room/RoomStructure';
 import SakuraTree from './room/SakuraTree';
@@ -25,6 +26,7 @@ const isCompact =
   window.matchMedia('(max-width: 820px), (pointer: coarse)').matches;
 
 type Props = {
+  onGarden: () => void;
   onBack: () => void;
   onReady: () => void;
   activeSection: SectionId | null;
@@ -41,7 +43,7 @@ function RoomReady({ onReady }: { onReady: () => void }) {
   return null;
 }
 
-export default function Scene3D({ activeSection, onSelectSection: select, onReady, onBack }: Props) {
+export default function Scene3D({ activeSection, onSelectSection: select, onReady, onBack, onGarden }: Props) {
   /* an orbit gesture that ends on an object is not a tap on it */
   const onSelectSection = (id: SectionId) => {
     if (recentlyDragged()) return;
@@ -67,6 +69,7 @@ export default function Scene3D({ activeSection, onSelectSection: select, onRead
       <RoomLighting />
       <RoomStructure />
       <RoomExitDoor onBack={onBack} enabled={!activeSection} />
+      <SecretGardenDoor onEnter={onGarden} enabled={!activeSection} />
         <group position={[1.2, 0, 0]}>
           <DeskSetup
             onSelectAbout={() => onSelectSection('about')}
